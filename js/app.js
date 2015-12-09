@@ -17,10 +17,53 @@ var MailModel = {
     * @return an array of messages, excluding those that match the filter rules.
     */
     filter : function(){
-      return [];
-    }
+      var msg = this.messages;
 
-  
+      for(var i=0; i<msg.length; i++){
+        for(var j=0; j< this.rules.length; j++){
+            var index = msg[i].indexOf(this.rules[j]);
+            if(index != -1){
+                msg.splice(i,1);
+            }
+        }
+      }
+      return msg;
+    }
+};
+
+var MailController = {
+    init: function(){
+        MailModel.init();
+        MailView.init();
+        MailView.filter();
+    },
+    get_data: function(i){
+        return MailModel.messages[i];
+    },
+    get_messages_length: function(){
+        return MailModel.messages.length;
+    },
+    filter: function(){
+        return MailModel.filter();
+    }
+};
+    
+var MailView = {
+    init: function(){
+        for(var i=0; i<MailController.get_messages_length(); i++){
+            var temp = '<li>' + MailController.get_data(i) + '</li>';
+            $(".All").append(temp);
+        }
+    },
+    filter: function(){
+        $(".btn-filter").click(function(){
+          $(".All").html("");
+          var filtered = MailController.filter();
+          for(var i=0; i< filtered.length; i++){
+            $(".result").append('<li>'+filtered[i]+'</li>');
+          }
+        });
+    }  
 };
 
 // Example of usage:
@@ -35,5 +78,6 @@ var MailModel = {
 
 
 $(document).ready(function(){
-
+    
+    MailController.init();
 });
